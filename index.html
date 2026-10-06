@@ -1,0 +1,2346 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08090b">
+<title>HEIAN — JARVIS Command Center</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+ --bg:#08090b;
+ --panel:#0e1013;
+ --panel2:#121519;
+ --line:rgba(255,255,255,.07);
+ --text:#f5f7f7;
+ --muted:#858c94;
+ --accent:#18d3c5;
+ --green:#53d69b;
+ --yellow:#e8b957;
+ --red:#ff6675;
+}
+
+html{scroll-behavior:smooth}
+
+body{
+ background:
+ radial-gradient(circle at 70% -10%,rgba(24,211,197,.09),transparent 30%),
+ var(--bg);
+ color:var(--text);
+ font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif;
+ min-height:100vh;
+ overflow-x:hidden;
+}
+
+button{font:inherit}
+
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+
+.sidebar{
+ position:fixed;
+ left:0;
+ top:0;
+ bottom:0;
+ width:250px;
+ background:rgba(9,11,13,.94);
+ border-right:1px solid var(--line);
+ padding:22px 14px;
+ z-index:50;
+ backdrop-filter:blur(25px);
+ display:flex;
+ flex-direction:column;
+}
+
+.logo{
+ display:flex;
+ align-items:center;
+ gap:11px;
+ padding:6px 10px 27px;
+}
+
+.logo-box{
+ width:40px;
+ height:40px;
+ border-radius:12px;
+ display:grid;
+ place-items:center;
+ color:var(--accent);
+ border:1px solid rgba(24,211,197,.25);
+ background:rgba(24,211,197,.06);
+ font-size:19px;
+ font-weight:800;
+}
+
+.logo-title{
+ font-weight:800;
+ letter-spacing:2px;
+ font-size:17px;
+}
+
+.logo-sub{
+ color:#656c74;
+ font-size:8px;
+ letter-spacing:1.5px;
+ margin-top:3px;
+}
+
+.section{
+ color:#555c64;
+ font-size:8px;
+ font-weight:700;
+ letter-spacing:1.7px;
+ padding:14px 12px 7px;
+}
+
+.nav{
+ display:flex;
+ flex-direction:column;
+ gap:3px;
+}
+
+.nav button{
+ border:0;
+ background:transparent;
+ color:#858d96;
+ width:100%;
+ padding:11px 12px;
+ border-radius:10px;
+ text-align:left;
+ cursor:pointer;
+ display:flex;
+ align-items:center;
+ gap:11px;
+ font-size:11px;
+ transition:.2s;
+}
+
+.nav button:hover{
+ background:rgba(255,255,255,.04);
+ color:white;
+}
+
+.nav button.active{
+ background:linear-gradient(90deg,rgba(24,211,197,.12),rgba(24,211,197,.025));
+ color:white;
+ box-shadow:inset 2px 0 var(--accent);
+}
+
+.nav-icon{
+ width:18px;
+ text-align:center;
+ color:#aab1b8;
+}
+
+.badge{
+ margin-left:auto;
+ background:rgba(24,211,197,.1);
+ color:var(--accent);
+ border-radius:20px;
+ padding:3px 6px;
+ font-size:8px;
+}
+
+.sidebar-bottom{
+ margin-top:auto;
+ border-top:1px solid var(--line);
+ padding-top:14px;
+}
+
+.system{
+ padding:13px;
+ border:1px solid var(--line);
+ border-radius:12px;
+ background:rgba(255,255,255,.02);
+}
+
+.system-top{
+ display:flex;
+ align-items:center;
+ gap:7px;
+ font-size:9px;
+ font-weight:700;
+}
+
+.dot{
+ width:7px;
+ height:7px;
+ border-radius:50%;
+ background:var(--green);
+ box-shadow:0 0 12px rgba(83,214,155,.7);
+}
+
+.system p{
+ color:#626a72;
+ font-size:8px;
+ line-height:1.5;
+ margin-top:7px;
+}
+
+/* MAIN */
+
+.main{
+ margin-left:250px;
+ width:calc(100% - 250px);
+ min-height:100vh;
+}
+
+.topbar{
+ height:70px;
+ border-bottom:1px solid var(--line);
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:0 30px;
+ position:sticky;
+ top:0;
+ z-index:30;
+ background:rgba(8,9,11,.82);
+ backdrop-filter:blur(22px);
+}
+
+.mobile-menu{
+ display:none;
+ width:37px;
+ height:37px;
+ border-radius:9px;
+ background:var(--panel);
+ border:1px solid var(--line);
+ color:white;
+}
+
+.crumb{
+ color:#777f87;
+ font-size:10px;
+}
+
+.crumb b{
+ color:#fff;
+ margin-left:6px;
+}
+
+.top-right{
+ display:flex;
+ align-items:center;
+ gap:9px;
+}
+
+.online{
+ height:32px;
+ border:1px solid rgba(83,214,155,.15);
+ background:rgba(83,214,155,.04);
+ color:#9be6be;
+ border-radius:20px;
+ padding:0 11px;
+ display:flex;
+ align-items:center;
+ gap:6px;
+ font-size:8px;
+}
+
+.icon-button{
+ width:34px;
+ height:34px;
+ border-radius:9px;
+ border:1px solid var(--line);
+ background:var(--panel);
+ color:#9ba3aa;
+ cursor:pointer;
+}
+
+.profile{
+ display:flex;
+ align-items:center;
+ gap:8px;
+ margin-left:3px;
+}
+
+.avatar{
+ width:34px;
+ height:34px;
+ border-radius:10px;
+ display:grid;
+ place-items:center;
+ color:#a5fff8;
+ background:linear-gradient(135deg,#17302e,#10201f);
+ border:1px solid rgba(24,211,197,.2);
+ font-size:9px;
+ font-weight:800;
+}
+
+.profile-text b{
+ display:block;
+ font-size:9px;
+}
+
+.profile-text span{
+ color:#606870;
+ font-size:7px;
+}
+
+/* CONTENT */
+
+.content{
+ padding:30px;
+ max-width:1550px;
+ margin:auto;
+}
+
+.heading{
+ display:flex;
+ align-items:flex-end;
+ justify-content:space-between;
+ margin-bottom:22px;
+}
+
+.eyebrow{
+ color:var(--accent);
+ font-size:8px;
+ font-weight:800;
+ letter-spacing:2px;
+ margin-bottom:8px;
+}
+
+.heading h1{
+ font-size:27px;
+ letter-spacing:-1px;
+}
+
+.heading p{
+ color:var(--muted);
+ font-size:10px;
+ margin-top:7px;
+}
+
+.date{
+ color:#666e76;
+ font-size:9px;
+}
+
+/* JARVIS */
+
+.jarvis-grid{
+ display:grid;
+ grid-template-columns:1fr 270px;
+ gap:16px;
+ margin-bottom:16px;
+}
+
+.jarvis{
+ min-height:205px;
+ border-radius:18px;
+ border:1px solid var(--line);
+ background:
+ radial-gradient(circle at 75% 50%,rgba(24,211,197,.08),transparent 28%),
+ linear-gradient(135deg,rgba(255,255,255,.025),rgba(255,255,255,.006));
+ padding:22px;
+ position:relative;
+ overflow:hidden;
+}
+
+.jarvis-top{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+}
+
+.jarvis-title{
+ font-size:10px;
+ font-weight:800;
+ letter-spacing:.8px;
+}
+
+.ready{
+ color:var(--accent);
+ font-size:8px;
+ display:flex;
+ align-items:center;
+ gap:6px;
+}
+
+.jarvis-content{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ height:150px;
+}
+
+.jarvis-copy h2{
+ font-size:20px;
+}
+
+.jarvis-copy p{
+ color:var(--muted);
+ max-width:430px;
+ font-size:9px;
+ line-height:1.7;
+ margin-top:7px;
+}
+
+.mic{
+ margin-top:13px;
+ padding:9px 13px;
+ border-radius:8px;
+ border:1px solid rgba(24,211,197,.22);
+ background:rgba(24,211,197,.06);
+ color:#a2fff8;
+ font-size:8px;
+ cursor:pointer;
+}
+
+.mic:hover{
+ background:rgba(24,211,197,.12);
+}
+
+.orb{
+ width:112px;
+ height:112px;
+ margin-right:25px;
+ border-radius:50%;
+ display:grid;
+ place-items:center;
+ background:
+ radial-gradient(circle,#bafff9 0%,#18d3c5 8%,#0c4542 28%,#071314 58%,transparent 72%);
+ box-shadow:
+ 0 0 35px rgba(24,211,197,.3),
+ 0 0 100px rgba(24,211,197,.08);
+ animation:pulse 3s ease-in-out infinite;
+ position:relative;
+}
+
+.orb:before,
+.orb:after{
+ content:"";
+ position:absolute;
+ border:1px solid rgba(24,211,197,.18);
+ border-radius:50%;
+}
+
+.orb:before{
+ inset:-12px;
+ animation:rotate 4s linear infinite;
+}
+
+.orb:after{
+ inset:-24px;
+ opacity:.4;
+ animation:rotate 6s linear infinite reverse;
+}
+
+.orb-core{
+ width:8px;
+ height:8px;
+ background:white;
+ border-radius:50%;
+ box-shadow:0 0 18px #fff;
+}
+
+@keyframes pulse{
+ 0%,100%{transform:scale(.96)}
+ 50%{transform:scale(1.04)}
+}
+
+@keyframes rotate{
+ to{transform:rotate(360deg)}
+}
+
+.activity{
+ border:1px solid var(--line);
+ background:var(--panel);
+ border-radius:18px;
+ padding:18px;
+}
+
+.activity h3{
+ font-size:10px;
+}
+
+.activity small{
+ color:#626a72;
+ font-size:7px;
+}
+
+.activity-text{
+ margin-top:17px;
+ font-size:9px;
+ color:#adb4ba;
+ line-height:1.7;
+}
+
+.activity-text span{
+ color:var(--accent);
+}
+
+/* METRICS */
+
+.metrics{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:12px;
+ margin-bottom:16px;
+}
+
+.metric{
+ background:var(--panel);
+ border:1px solid var(--line);
+ border-radius:14px;
+ padding:17px;
+}
+
+.metric-top{
+ display:flex;
+ justify-content:space-between;
+}
+
+.metric-label{
+ color:#858d95;
+ font-size:8px;
+}
+
+.demo{
+ color:#697178;
+ border:1px solid var(--line);
+ border-radius:4px;
+ padding:3px 5px;
+ font-size:6px;
+}
+
+.metric-value{
+ font-size:22px;
+ font-weight:700;
+ margin-top:11px;
+}
+
+.metric-bottom{
+ display:flex;
+ gap:7px;
+ margin-top:8px;
+ font-size:7px;
+}
+
+.up{color:var(--green)}
+.warn{color:var(--yellow)}
+.down{color:var(--red)}
+.muted{color:#646c74}
+
+/* PANELS */
+
+.two{
+ display:grid;
+ grid-template-columns:1.6fr .8fr;
+ gap:16px;
+ margin-bottom:16px;
+}
+
+.panel{
+ background:var(--panel);
+ border:1px solid var(--line);
+ border-radius:17px;
+ overflow:hidden;
+}
+
+.panel-head{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:17px 18px;
+ border-bottom:1px solid var(--line);
+}
+
+.panel-head h3{
+ font-size:10px;
+}
+
+.panel-head p{
+ color:#656d75;
+ font-size:7px;
+ margin-top:4px;
+}
+
+.small-button{
+ border:1px solid var(--line);
+ background:transparent;
+ color:#899198;
+ border-radius:6px;
+ padding:6px 8px;
+ font-size:7px;
+}
+
+/* CHART */
+
+.chart{
+ height:250px;
+ padding:15px 18px;
+}
+
+.chart svg{
+ width:100%;
+ height:100%;
+}
+
+.gridline{
+ stroke:rgba(255,255,255,.05);
+ stroke-width:1;
+}
+
+.line{
+ fill:none;
+ stroke:var(--accent);
+ stroke-width:2.5;
+ stroke-linecap:round;
+ filter:drop-shadow(0 0 5px rgba(24,211,197,.3));
+}
+
+.fill{
+ fill:url(#gradient);
+}
+
+.chart-text{
+ fill:#5d666e;
+ font-size:8px;
+}
+
+/* ORDER RING */
+
+.ring-wrap{
+ height:180px;
+ display:grid;
+ place-items:center;
+}
+
+.ring{
+ width:130px;
+ height:130px;
+ border-radius:50%;
+ background:conic-gradient(
+  var(--accent) 0 52%,
+  #438e88 52% 74%,
+  #5c636a 74% 91%,
+  #282d32 91%
+ );
+ display:grid;
+ place-items:center;
+ position:relative;
+}
+
+.ring:after{
+ content:"";
+ position:absolute;
+ inset:12px;
+ background:var(--panel);
+ border-radius:50%;
+}
+
+.ring-center{
+ z-index:2;
+ text-align:center;
+}
+
+.ring-center b{
+ font-size:23px;
+ display:block;
+}
+
+.ring-center span{
+ color:#666e76;
+ font-size:7px;
+}
+
+.legend{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:10px;
+ padding:0 18px 18px;
+}
+
+.legend-item{
+ color:#838b92;
+ font-size:7px;
+ display:flex;
+ align-items:center;
+ gap:6px;
+}
+
+.legend-dot{
+ width:7px;
+ height:7px;
+ border-radius:50%;
+}
+
+.c1{background:var(--accent)}
+.c2{background:#438e88}
+.c3{background:#5c636a}
+.c4{background:#282d32}
+
+/* LOWER */
+
+.three{
+ display:grid;
+ grid-template-columns:1.15fr 1fr .85fr;
+ gap:16px;
+}
+
+.list{
+ padding:3px 18px 12px;
+}
+
+.row{
+ min-height:55px;
+ border-bottom:1px solid rgba(255,255,255,.045);
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+}
+
+.row:last-child{border:0}
+
+.left{
+ display:flex;
+ align-items:center;
+ gap:9px;
+ min-width:0;
+}
+
+.item-icon{
+ width:30px;
+ height:30px;
+ border-radius:8px;
+ border:1px solid var(--line);
+ background:rgba(255,255,255,.025);
+ display:grid;
+ place-items:center;
+ font-size:8px;
+ color:#8e969d;
+}
+
+.name{
+ font-size:8px;
+ font-weight:700;
+}
+
+.sub{
+ color:#5f676f;
+ font-size:7px;
+ margin-top:3px;
+}
+
+.right{
+ text-align:right;
+}
+
+.right b{
+ display:block;
+ font-size:8px;
+}
+
+.right span{
+ font-size:7px;
+ color:#606870;
+ margin-top:3px;
+ display:block;
+}
+
+/* SECURITY */
+
+.security{
+ padding:10px 18px 15px;
+}
+
+.security-row{
+ min-height:43px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ border-bottom:1px solid rgba(255,255,255,.045);
+}
+
+.security-row:last-child{border:0}
+
+.security-name{
+ display:flex;
+ gap:7px;
+ align-items:center;
+ font-size:8px;
+}
+
+.shield{color:var(--accent)}
+
+.security-state{
+ color:var(--green);
+ font-size:7px;
+}
+
+.security-state.warning{
+ color:var(--yellow);
+}
+
+/* INSIGHT */
+
+.insight{
+ margin-top:16px;
+}
+
+.insight-grid{
+ padding:16px;
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:12px;
+}
+
+.insight-box{
+ padding:14px;
+ border:1px solid var(--line);
+ border-radius:11px;
+ background:rgba(255,255,255,.015);
+}
+
+.insight-icon{
+ color:var(--accent);
+ font-size:15px;
+}
+
+.insight-box b{
+ display:block;
+ font-size:9px;
+ margin-top:8px;
+}
+
+.insight-box p{
+ color:#6f777f;
+ font-size:7px;
+ line-height:1.7;
+ margin-top:5px;
+}
+
+/* FLOATING */
+
+.floating{
+ position:fixed;
+ right:22px;
+ bottom:20px;
+ z-index:60;
+ display:flex;
+ align-items:center;
+ gap:8px;
+ padding:6px 10px 6px 6px;
+ border-radius:30px;
+ background:rgba(10,14,16,.9);
+ border:1px solid rgba(24,211,197,.17);
+ backdrop-filter:blur(20px);
+ box-shadow:0 15px 50px rgba(0,0,0,.45);
+}
+
+.mini-orb{
+ width:31px;
+ height:31px;
+ border-radius:50%;
+ background:radial-gradient(circle,#bafff9,#18d3c5 16%,#092827 55%);
+ box-shadow:0 0 16px rgba(24,211,197,.25);
+}
+
+.floating b{
+ display:block;
+ font-size:7px;
+ letter-spacing:1px;
+}
+
+.floating span{
+ color:#626a72;
+ font-size:6px;
+}
+
+/* TOAST */
+
+.toast{
+ position:fixed;
+ right:22px;
+ top:86px;
+ width:270px;
+ padding:14px;
+ border-radius:11px;
+ border:1px solid rgba(24,211,197,.18);
+ background:#101417;
+ box-shadow:0 20px 60px rgba(0,0,0,.4);
+ transform:translateX(310px);
+ transition:.3s;
+ z-index:100;
+}
+
+.toast.show{transform:translateX(0)}
+
+.toast b{
+ font-size:9px;
+}
+
+.toast p{
+ color:#747d85;
+ font-size:7px;
+ line-height:1.6;
+ margin-top:4px;
+}
+
+/* MOBILE */
+
+@media(max-width:1050px){
+
+ .metrics{
+  grid-template-columns:repeat(2,1fr);
+ }
+
+ .three{
+  grid-template-columns:1fr 1fr;
+ }
+
+ .three .panel:last-child{
+  grid-column:1/-1;
+ }
+
+}
+
+@media(max-width:800px){
+
+ .sidebar{
+  transform:translateX(-100%);
+  transition:.25s;
+  box-shadow:20px 0 70px rgba(0,0,0,.5);
+ }
+
+ .sidebar.open{
+  transform:translateX(0);
+ }
+
+ .main{
+  margin-left:0;
+  width:100%;
+ }
+
+ .topbar{
+  height:62px;
+  padding:0 14px;
+ }
+
+ .mobile-menu{
+  display:block;
+ }
+
+ .crumb{
+  display:none;
+ }
+
+ .online{
+  display:none;
+ }
+
+ .profile-text{
+  display:none;
+ }
+
+ .content{
+  padding:22px 14px 90px;
+ }
+
+ .heading{
+  align-items:flex-start;
+  flex-direction:column;
+  gap:7px;
+ }
+
+ .heading h1{
+  font-size:23px;
+ }
+
+ .jarvis-grid,
+ .two{
+  grid-template-columns:1fr;
+ }
+
+ .jarvis-content{
+  height:160px;
+ }
+
+ .orb{
+  width:85px;
+  height:85px;
+  margin-right:5px;
+ }
+
+ .activity{
+  display:none;
+ }
+
+ .three{
+  grid-template-columns:1fr;
+ }
+
+ .three .panel:last-child{
+  grid-column:auto;
+ }
+
+}
+
+@media(max-width:480px){
+
+ .metrics{
+  gap:8px;
+ }
+
+ .metric{
+  padding:13px;
+ }
+
+ .metric-value{
+  font-size:18px;
+ }
+
+ .jarvis{
+  padding:17px;
+ }
+
+ .jarvis-copy h2{
+  font-size:17px;
+ }
+
+ .jarvis-copy p{
+  max-width:220px;
+ }
+
+ .orb{
+  width:70px;
+  height:70px;
+  flex-shrink:0;
+ }
+
+ .orb:before{inset:-7px}
+ .orb:after{inset:-14px}
+
+ .chart{
+  height:215px;
+ }
+
+ .floating{
+  right:10px;
+  bottom:10px;
+ }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar" id="sidebar">
+
+ <div class="logo">
+  <div class="logo-box">H</div>
+
+  <div>
+   <div class="logo-title">HEIAN</div>
+   <div class="logo-sub">COMMAND CENTER</div>
+  </div>
+ </div>
+
+ <div class="section">YÖNETİM</div>
+
+ <nav class="nav">
+
+  <button class="active" data-target="dashboard">
+   <span class="nav-icon">⌂</span>
+   Dashboard
+  </button>
+
+  <button data-target="products">
+   <span class="nav-icon">□</span>
+   Ürünler
+  </button>
+
+  <button data-target="orders">
+   <span class="nav-icon">≡</span>
+   Siparişler
+   <span class="badge">12</span>
+  </button>
+
+  <button data-target="inventory">
+   <span class="nav-icon">▣</span>
+   Stok Merkezi
+  </button>
+
+  <button data-target="customers">
+   <span class="nav-icon">♙</span>
+   Müşteriler
+  </button>
+
+  <button data-target="analytics">
+   <span class="nav-icon">⌁</span>
+   Satış Analizi
+  </button>
+
+ </nav>
+
+ <div class="section">SİSTEM</div>
+
+ <nav class="nav">
+
+  <button data-target="notifications">
+   <span class="nav-icon">♢</span>
+   Bildirimler
+   <span class="badge">4</span>
+  </button>
+
+  <button data-target="security">
+   <span class="nav-icon">◇</span>
+   Güvenlik
+  </button>
+
+  <button data-target="logs">
+   <span class="nav-icon">☷</span>
+   İşlem Kayıtları
+  </button>
+
+  <button data-target="settings">
+   <span class="nav-icon">⚙</span>
+   Ayarlar
+  </button>
+
+ </nav>
+
+ <div class="sidebar-bottom">
+
+  <div class="system">
+
+   <div class="system-top">
+    <span class="dot"></span>
+    HEIAN CORE ONLINE
+   </div>
+
+   <p>
+    JARVIS ses çekirdeği hazır.
+    Gerçek veri bağlantısı bekleniyor.
+   </p>
+
+  </div>
+
+ </div>
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+<header class="topbar">
+
+ <div style="display:flex;align-items:center;gap:12px">
+
+  <button class="mobile-menu" id="mobileMenu">☰</button>
+
+  <div class="crumb">
+   HEIAN <b>/ Dashboard</b>
+  </div>
+
+ </div>
+
+ <div class="top-right">
+
+  <div class="online">
+   <span class="dot"></span>
+   SYSTEM ONLINE
+  </div>
+
+  <button class="icon-button" id="notificationButton">
+   ♢
+  </button>
+
+  <div class="profile">
+
+   <div class="avatar">HE</div>
+
+   <div class="profile-text">
+    <b>HEIAN Admin</b>
+    <span>Administrator</span>
+   </div>
+
+  </div>
+
+ </div>
+
+</header>
+
+
+<section class="content">
+
+
+<!-- HEADING -->
+
+<div class="heading" id="dashboard">
+
+ <div>
+  <div class="eyebrow">BUSINESS COMMAND CENTER</div>
+  <h1>İşletme genel bakışı</h1>
+  <p>HEIAN operasyonlarını tek merkezden izleyin.</p>
+ </div>
+
+ <div class="date" id="date"></div>
+
+</div>
+
+
+<!-- JARVIS -->
+
+<section class="jarvis-grid">
+
+ <div class="jarvis">
+
+  <div class="jarvis-top">
+
+   <div class="jarvis-title">
+    VOICE INTELLIGENCE CORE
+   </div>
+
+   <div class="ready">
+    <span class="dot"></span>
+    <span id="jarvisState">READY</span>
+   </div>
+
+  </div>
+
+  <div class="jarvis-content">
+
+   <div class="jarvis-copy">
+
+    <h2>JARVIS hazır.</h2>
+
+    <p>
+     “JARVIS” diyerek sesli komut verebilirsiniz.
+     Bu sürümde işletme verileri demo olarak gösterilmektedir.
+    </p>
+
+    <button class="mic" id="mic">
+     🎙 Mikrofonu Etkinleştir
+    </button>
+
+   </div>
+
+   <div class="orb">
+    <div class="orb-core"></div>
+   </div>
+
+  </div>
+
+ </div>
+
+
+ <div class="activity">
+
+  <h3>VOICE ACTIVITY</h3>
+  <small>Son ses aktivitesi</small>
+
+  <div class="activity-text" id="activity">
+   Sistem hazır.<br><br>
+   <span>“JARVIS”</span> diyerek başlayın.
+  </div>
+
+ </div>
+
+</section>
+
+
+<!-- METRICS -->
+
+<section class="metrics">
+
+ <div class="metric">
+
+  <div class="metric-top">
+   <span class="metric-label">TOPLAM CİRO</span>
+   <span class="demo">DEMO</span>
+  </div>
+
+  <div class="metric-value">₺184.620</div>
+
+  <div class="metric-bottom">
+   <span class="up">↑ 12.8%</span>
+   <span class="muted">geçen aya göre</span>
+  </div>
+
+ </div>
+
+
+ <div class="metric">
+
+  <div class="metric-top">
+   <span class="metric-label">SİPARİŞLER</span>
+   <span class="demo">DEMO</span>
+  </div>
+
+  <div class="metric-value">286</div>
+
+  <div class="metric-bottom">
+   <span class="up">↑ 8.4%</span>
+   <span class="muted">bu ay</span>
+  </div>
+
+ </div>
+
+
+ <div class="metric">
+
+  <div class="metric-top">
+   <span class="metric-label">ÜRÜNLER</span>
+   <span class="demo">DEMO</span>
+  </div>
+
+  <div class="metric-value">1.248</div>
+
+  <div class="metric-bottom">
+   <span class="up">+24</span>
+   <span class="muted">son 30 gün</span>
+  </div>
+
+ </div>
+
+
+ <div class="metric">
+
+  <div class="metric-top">
+   <span class="metric-label">KRİTİK STOK</span>
+   <span class="demo">DEMO</span>
+  </div>
+
+  <div class="metric-value">17</div>
+
+  <div class="metric-bottom">
+   <span class="down">● Dikkat</span>
+   <span class="muted">ürün</span>
+  </div>
+
+ </div>
+
+</section>
+
+
+<!-- SALES + ORDERS -->
+
+<section class="two">
+
+ <div class="panel" id="analytics">
+
+  <div class="panel-head">
+
+   <div>
+    <h3>Satış performansı</h3>
+    <p>Son 7 gün · Demo verisi</p>
+   </div>
+
+   <button class="small-button">Bu hafta⌄</button>
+
+  </div>
+
+  <div class="chart">
+
+   <svg viewBox="0 0 700 230" preserveAspectRatio="none">
+
+    <defs>
+     <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#18d3c5" stop-opacity=".18"/>
+      <stop offset="100%" stop-color="#18d3c5" stop-opacity="0"/>
+     </linearGradient>
+    </defs>
+
+    <line class="gridline" x1="0" y1="30" x2="700" y2="30"/>
+    <line class="gridline" x1="0" y1="80" x2="700" y2="80"/>
+    <line class="gridline" x1="0" y1="130" x2="700" y2="130"/>
+    <line class="gridline" x1="0" y1="180" x2="700" y2="180"/>
+
+    <path
+     class="fill"
+     d="M0 178
+     C60 158 70 162 110 145
+     S175 112 210 134
+     S275 82 315 103
+     S370 124 410 88
+     S465 70 505 82
+     S555 45 595 62
+     S655 40 700 28
+     L700 230 L0 230Z"
+    />
+
+    <path
+     class="line"
+     d="M0 178
+     C60 158 70 162 110 145
+     S175 112 210 134
+     S275 82 315 103
+     S370 124 410 88
+     S465 70 505 82
+     S555 45 595 62
+     S655 40 700 28"
+    />
+
+    <text class="chart-text" x="0" y="220">Pzt</text>
+    <text class="chart-text" x="100" y="220">Sal</text>
+    <text class="chart-text" x="200" y="220">Çar</text>
+    <text class="chart-text" x="300" y="220">Per</text>
+    <text class="chart-text" x="400" y="220">Cum</text>
+    <text class="chart-text" x="500" y="220">Cmt</text>
+    <text class="chart-text" x="600" y="220">Paz</text>
+
+   </svg>
+
+  </div>
+
+ </div>
+
+
+ <div class="panel" id="orders">
+
+  <div class="panel-head">
+
+   <div>
+    <h3>Sipariş durumu</h3>
+    <p>286 toplam · Demo</p>
+   </div>
+
+   <button class="small-button">Detay</button>
+
+  </div>
+
+  <div class="ring-wrap">
+
+   <div class="ring">
+
+    <div class="ring-center">
+     <b>286</b>
+     <span>TOPLAM</span>
+    </div>
+
+   </div>
+
+  </div>
+
+  <div class="legend">
+
+   <div class="legend-item">
+    <span class="legend-dot c1"></span>
+    Hazırlanıyor · 149
+   </div>
+
+   <div class="legend-item">
+    <span class="legend-dot c2"></span>
+    Kargoda · 63
+   </div>
+
+   <div class="legend-item">
+    <span class="legend-dot c3"></span>
+    Teslim · 49
+   </div>
+
+   <div class="legend-item">
+    <span class="legend-dot c4"></span>
+    İptal · 25
+   </div>
+
+  </div>
+
+ </div>
+
+</section>
+
+
+<!-- LOWER -->
+
+<section class="three">
+
+
+<!-- RECENT ORDERS -->
+
+<div class="panel">
+
+ <div class="panel-head">
+
+  <div>
+   <h3>Son siparişler</h3>
+   <p>Demo kayıtları</p>
+  </div>
+
+  <button class="small-button">Tümü</button>
+
+ </div>
+
+ <div class="list">
+
+  <div class="row">
+
+   <div class="left">
+    <div class="item-icon">01</div>
+    <div>
+     <div class="name">#HE-10482</div>
+     <div class="sub">Kadın · 3 ürün</div>
+    </div>
+   </div>
+
+   <div class="right">
+    <b>₺2.840</b>
+    <span class="up">Hazırlanıyor</span>
+   </div>
+
+  </div>
+
+
+  <div class="row">
+
+   <div class="left">
+    <div class="item-icon">02</div>
+    <div>
+     <div class="name">#HE-10481</div>
+     <div class="sub">Kadın · 1 ürün</div>
+    </div>
+   </div>
+
+   <div class="right">
+    <b>₺1.290</b>
+    <span class="up">Kargoda</span>
+   </div>
+
+  </div>
+
+
+  <div class="row">
+
+   <div class="left">
+    <div class="item-icon">03</div>
+    <div>
+     <div class="name">#HE-10480</div>
+     <div class="sub">Kadın · 2 ürün</div>
+    </div>
+   </div>
+
+   <div class="right">
+    <b>₺3.650</b>
+    <span class="warn">Kontrol</span>
+   </div>
+
+  </div>
+
+
+  <div class="row">
+
+   <div class="left">
+    <div class="item-icon">04</div>
+    <div>
+     <div class="name">#HE-10479</div>
+     <div class="sub">Kadın · 4 ürün</div>
+    </div>
+   </div>
+
+   <div class="right">
+    <b>₺4.180</b>
+    <span class="up">Teslim</span>
+   </div>
+
+  </div>
+
+ </div>
+
+</div>
+
+
+<!-- STOCK -->
+
+<div class="panel" id="inventory">
+
+ <div class="panel-head">
+
+  <div>
+   <h3>Kritik stok</h3>
+   <p>17 ürün dikkat gerektiriyor</p>
+  </div>
+
+  <button class="small-button">Stok</button>
+
+ </div>
+
+ <div class="list">
+
+  <div class="row">
+
+   <div class="left">
+    <div class="item-icon">01</div>
+    <div>
+     <div class="name">Oversize Blazer</div>
+     <div class="sub">Siyah / M</div>
+    </div>
+   </div>
+
+   <div class="right">
+    <b class="down">3 adet</b>
+    <span>Kritik</span>
+   </div>
+
+  </div>
+
+
+  <div class="row">
+
+   <div class="left">
+    <div class="item-icon">02</div>
+    <div>
+     <div class="name">Saten Elbise</div>
+     <div class="sub">Bordo / S</div>
+    </div>
+   </div>
+
+   <div class="right">
+    <b class="down">5 adet</b>
+    <span>Kritik</span>
+   </div>
+
+  </div>
+
+
+  <div class="row">
+
+   <div class="left">
+    <div class="item-icon">03</div>
+    <div>
+     <div class="name">Basic Gömlek</div>
+     <div class="sub">Beyaz / M</div>
+    </div>
+   </div>
+
+   <div class="right">
+    <b class="warn">8 adet</b>
+    <span>Düşük</span>
+   </div>
+
+  </div>
+
+
+  <div class="row">
+
+   <div class="left">
+    <div class="item-icon">04</div>
+    <div>
+     <div class="name">Wide Leg Pantolon</div>
+     <div class="sub">Taş / 38</div>
+    </div>
+   </div>
+
+   <div class="right">
+    <b class="warn">9 adet</b>
+    <span>Düşük</span>
+   </div>
+
+  </div>
+
+ </div>
+
+</div>
+
+
+<!-- SECURITY -->
+
+<div class="panel" id="security">
+
+ <div class="panel-head">
+
+  <div>
+   <h3>Güvenlik merkezi</h3>
+   <p>Sistem güvenliği</p>
+  </div>
+
+  <button class="small-button">Merkez</button>
+
+ </div>
+
+ <div class="security">
+
+  <div class="security-row">
+   <div class="security-name">
+    <span class="shield">◇</span>
+    HTTPS / SSL
+   </div>
+   <span class="security-state">GÜVENLİ</span>
+  </div>
+
+  <div class="security-row">
+   <div class="security-name">
+    <span class="shield">◇</span>
+    Admin hesabı
+   </div>
+   <span class="security-state">AKTİF</span>
+  </div>
+
+  <div class="security-row">
+   <div class="security-name">
+    <span class="shield">◇</span>
+    AI API
+   </div>
+   <span class="security-state warning">BEKLİYOR</span>
+  </div>
+
+  <div class="security-row">
+   <div class="security-name">
+    <span class="shield">◇</span>
+    Audit Log
+   </div>
+   <span class="security-state">AKTİF</span>
+  </div>
+
+  <div class="security-row">
+   <div class="security-name">
+    <span class="shield">◇</span>
+    İşlem onayı
+   </div>
+   <span class="security-state">AKTİF</span>
+  </div>
+
+ </div>
+
+</div>
+
+</section>
+
+
+<!-- INSIGHTS -->
+
+<section class="panel insight" id="notifications">
+
+ <div class="panel-head">
+
+  <div>
+   <h3>JARVIS işletme içgörüsü</h3>
+   <p>Otomatik analiz · Demo veri</p>
+  </div>
+
+  <span class="demo">AI ANALİZİ</span>
+
+ </div>
+
+ <div class="insight-grid">
+
+  <div class="insight-box">
+   <div class="insight-icon">↗</div>
+   <b>Satış trendi</b>
+   <p>
+    Demo verilere göre haftalık satış trendi
+    pozitif yönde ilerliyor.
+   </p>
+  </div>
+
+  <div class="insight-box">
+   <div class="insight-icon">!</div>
+   <b>Stok uyarısı</b>
+   <p>
+    Kritik stoktaki ürünler için tedarik
+    kontrolü öneriliyor.
+   </p>
+  </div>
+
+  <div class="insight-box">
+   <div class="insight-icon">◇</div>
+   <b>Güvenlik</b>
+   <p>
+    Kritik işlemler için onay ve kayıt
+    mekanizması hazır.
+   </p>
+  </div>
+
+ </div>
+
+</section>
+
+
+<!-- LOGS -->
+
+<section class="panel insight" id="logs">
+
+ <div class="panel-head">
+
+  <div>
+   <h3>İşlem kayıtları</h3>
+   <p>Son sistem olayları</p>
+  </div>
+
+  <button class="small-button">Audit Log</button>
+
+ </div>
+
+ <div class="list">
+
+  <div class="row">
+   <div class="left">
+    <div class="item-icon">✓</div>
+    <div>
+     <div class="name">JARVIS çekirdeği başlatıldı</div>
+     <div class="sub">Voice Core · Sistem</div>
+    </div>
+   </div>
+   <div class="right">
+    <span>Az önce</span>
+   </div>
+  </div>
+
+  <div class="row">
+   <div class="left">
+    <div class="item-icon">✓</div>
+    <div>
+     <div class="name">Güvenlik kontrolü yapıldı</div>
+     <div class="sub">HEIAN Admin</div>
+    </div>
+   </div>
+   <div class="right">
+    <span>2 dk önce</span>
+   </div>
+  </div>
+
+  <div class="row">
+   <div class="left">
+    <div class="item-icon">i</div>
+    <div>
+     <div class="name">AI backend bağlantısı bekleniyor</div>
+     <div class="sub">Integration Layer</div>
+    </div>
+   </div>
+   <div class="right">
+    <span>5 dk önce</span>
+   </div>
+  </div>
+
+ </div>
+
+</section>
+
+
+<!-- SYSTEM STATUS -->
+
+<section class="panel insight" id="settings">
+
+ <div class="panel-head">
+
+  <div>
+   <h3>Sistem durumu</h3>
+   <p>HEIAN JARVIS altyapısı</p>
+  </div>
+
+ </div>
+
+ <div class="insight-grid">
+
+  <div class="insight-box">
+   <div class="insight-icon">●</div>
+   <b>Frontend</b>
+   <p>ONLINE · GitHub Pages</p>
+  </div>
+
+  <div class="insight-box">
+   <div class="insight-icon">●</div>
+   <b>Voice Core</b>
+   <p>READY · Speech Recognition</p>
+  </div>
+
+  <div class="insight-box">
+   <div class="insight-icon">○</div>
+   <b>Backend</b>
+   <p>Henüz bağlanmadı</p>
+  </div>
+
+ </div>
+
+</section>
+
+
+<!-- PRODUCT ANCHOR -->
+
+<div id="products"></div>
+<div id="customers"></div>
+
+</section>
+
+</main>
+
+</div>
+
+
+<!-- FLOATING JARVIS -->
+
+<div class="floating">
+
+ <div class="mini-orb"></div>
+
+ <div>
+  <b>JARVIS</b>
+  <span id="floatingStatus">Voice Core Ready</span>
+ </div>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div class="toast" id="toast">
+ <b id="toastTitle">HEIAN SYSTEM</b>
+ <p id="toastText">Sistem mesajı.</p>
+</div>
+
+
+<script>
+
+/* DATE */
+
+document.getElementById("date").textContent =
+ new Date().toLocaleDateString("tr-TR",{
+  weekday:"long",
+  day:"numeric",
+  month:"long",
+  year:"numeric"
+});
+
+
+/* MOBILE MENU */
+
+const sidebar=document.getElementById("sidebar");
+
+document
+.getElementById("mobileMenu")
+.addEventListener("click",()=>{
+ sidebar.classList.toggle("open");
+});
+
+
+/* NAVIGATION */
+
+document.querySelectorAll(".nav button").forEach(button=>{
+
+ button.addEventListener("click",()=>{
+
+  document.querySelectorAll(".nav button")
+  .forEach(x=>x.classList.remove("active"));
+
+  button.classList.add("active");
+
+  const target=document.getElementById(
+   button.dataset.target
+  );
+
+  if(target){
+
+   target.scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+   });
+
+  }
+
+  sidebar.classList.remove("open");
+
+ });
+
+});
+
+
+/* TOAST */
+
+function toast(title,text){
+
+ const box=document.getElementById("toast");
+
+ document.getElementById("toastTitle")
+ .textContent=title;
+
+ document.getElementById("toastText")
+ .textContent=text;
+
+ box.classList.add("show");
+
+ setTimeout(()=>{
+  box.classList.remove("show");
+ },3500);
+
+}
+
+
+/* SPEECH */
+
+function speak(text){
+
+ if(!("speechSynthesis" in window))return;
+
+ speechSynthesis.cancel();
+
+ const u=new SpeechSynthesisUtterance(text);
+
+ u.lang="tr-TR";
+ u.rate=.95;
+ u.pitch=1;
+
+ speechSynthesis.speak(u);
+
+}
+
+
+/* JARVIS */
+
+let recognition=null;
+let enabled=false;
+let waiting=false;
+let restarting=false;
+
+
+function setStatus(text){
+
+ document.getElementById("jarvisState")
+ .textContent=text;
+
+ document.getElementById("floatingStatus")
+ .textContent=text;
+
+}
+
+
+function setActivity(html){
+
+ document.getElementById("activity")
+ .innerHTML=html;
+
+}
+
+
+/* COMMAND SYSTEM */
+
+function command(text){
+
+ const t=text
+ .toLocaleLowerCase("tr-TR")
+ .trim();
+
+ setActivity(
+  `Komut: <span>“${text}”</span>`
+ );
+
+
+ if(t.includes("merhaba")){
+
+  speak("Merhaba. HEIAN sistemi hazır.");
+
+  return;
+
+ }
+
+
+ if(t.includes("stok")){
+
+  document.getElementById("inventory")
+  .scrollIntoView({
+   behavior:"smooth"
+  });
+
+  speak("Stok merkezini açıyorum.");
+
+  return;
+
+ }
+
+
+ if(
+  t.includes("sipariş")||
+  t.includes("siparis")
+ ){
+
+  document.getElementById("orders")
+  .scrollIntoView({
+   behavior:"smooth"
+  });
+
+  speak("Sipariş merkezini açıyorum.");
+
+  return;
+
+ }
+
+
+ if(
+  t.includes("satış")||
+  t.includes("satis")||
+  t.includes("ciro")
+ ){
+
+  document.getElementById("analytics")
+  .scrollIntoView({
+   behavior:"smooth"
+  });
+
+  speak("Satış analizini açıyorum.");
+
+  return;
+
+ }
+
+
+ if(t.includes("güvenlik")){
+
+  document.getElementById("security")
+  .scrollIntoView({
+   behavior:"smooth"
+  });
+
+  speak("Güvenlik merkezini açıyorum.");
+
+  return;
+
+ }
+
+
+ if(t.includes("panel")){
+
+  document.getElementById("dashboard")
+  .scrollIntoView({
+   behavior:"smooth"
+  });
+
+  speak("Ana dashboard hazır.");
+
+  return;
+
+ }
+
+
+ /*
+  GERÇEK JARVIS AI BURAYA BAĞLANACAK.
+
+  Şu an gerçek HEIAN verisi olmadığı için
+  sistem sayı veya bilgi uydurmaz.
+ */
+
+ speak(
+  "Komutunuzu aldım. Gerçek HEIAN veri bağlantısı kurulduğunda bu işlemi gerçekleştireceğim."
+ );
+
+ toast(
+  "JARVIS",
+  "Gerçek AI backend bağlantısı henüz kurulmadı."
+ );
+
+}
+
+
+/* SPEECH RECOGNITION */
+
+function setupSpeech(){
+
+ const SpeechRecognition=
+  window.SpeechRecognition||
+  window.webkitSpeechRecognition;
+
+ if(!SpeechRecognition){
+
+  toast(
+   "Tarayıcı desteği",
+   "Bu tarayıcı sesli komut sistemini desteklemiyor."
+  );
+
+  return null;
+
+ }
+
+ const r=new SpeechRecognition();
+
+ r.lang="tr-TR";
+ r.continuous=true;
+ r.interimResults=true;
+ r.maxAlternatives=1;
+
+
+ r.onstart=()=>{
+
+  setStatus(
+   waiting?
+   "COMMAND LISTENING":
+   "LISTENING"
+  );
+
+ };
+
+
+ r.onresult=(event)=>{
+
+  for(
+   let i=event.resultIndex;
+   i<event.results.length;
+   i++
+  ){
+
+   const result=event.results[i];
+
+   const text=result[0]
+   .transcript
+   .trim();
+
+   if(!text)continue;
+
+
+   if(!waiting){
+
+    const normalized=
+     text.toLocaleLowerCase("tr-TR");
+
+    if(
+     normalized.includes("jarvis")||
+     normalized.includes("cerviz")||
+     normalized.includes("cervis")
+    ){
+
+     waiting=true;
+
+     setStatus("COMMAND LISTENING");
+
+     setActivity(
+      `<span>JARVIS</span> uyandırıldı. Dinliyorum...`
+     );
+
+     speak("Dinliyorum.");
+
+     return;
+
+    }
+
+   }
+
+
+   if(
+    waiting &&
+    result.isFinal
+   ){
+
+    waiting=false;
+
+    setStatus("PROCESSING");
+
+    command(text);
+
+    setTimeout(()=>{
+     setStatus("LISTENING");
+    },1500);
+
+   }
+
+  }
+
+ };
+
+
+ r.onerror=(event)=>{
+
+  console.log(
+   "Speech error:",
+   event.error
+  );
+
+  if(
+   event.error==="not-allowed"||
+   event.error==="service-not-allowed"
+  ){
+
+   enabled=false;
+
+   setStatus(
+    "MICROPHONE REQUIRED"
+   );
+
+  }
+
+ };
+
+
+ r.onend=()=>{
+
+  if(
+   enabled &&
+   !restarting
+  ){
+
+   restarting=true;
+
+   setTimeout(()=>{
+
+    restarting=false;
+
+    try{
+     r.start();
+    }catch(e){}
+
+   },600);
+
+  }
+
+ };
+
+ return r;
+
+}
+
+
+/* MICROPHONE BUTTON */
+
+document
+.getElementById("mic")
+.addEventListener("click",()=>{
+
+ if(!recognition){
+
+  recognition=setupSpeech();
+
+ }
+
+ if(!recognition)return;
+
+ try{
+
+  recognition.start();
+
+  enabled=true;
+
+  setStatus("LISTENING");
+
+  document.getElementById("mic")
+  .textContent="🎙 Mikrofon Aktif";
+
+  toast(
+   "JARVIS",
+   "Mikrofon aktif. “JARVIS” diyerek komut verebilirsiniz."
+  );
+
+ }catch(e){
+
+  console.log(e);
+
+ }
+
+});
+
+
+/* NOTIFICATIONS */
+
+document
+.getElementById("notificationButton")
+.addEventListener("click",()=>{
+
+ toast(
+  "Bildirim Merkezi",
+  "4 yeni sistem bildirimi bulunuyor."
+ );
+
+});
+
+
+</script>
+
+</body>
+</html>
